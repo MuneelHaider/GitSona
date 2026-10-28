@@ -62,8 +62,11 @@ public sealed class CredentialService(GitRunner git)
         return new SignInCredential(username, password);
     }
 
-    /// <summary>Test seam: lets tests verify which secret git hands back. Not part of the public surface.</summary>
-    internal async Task<string?> FillPasswordAsync(string hostUrl, string? username, CancellationToken ct = default)
+    /// <summary>
+    /// Reads the stored token for a login, without any sign-in UI (so it never opens a browser). Returns null when
+    /// there is none. The caller must keep it in memory only and send it nowhere except the account's own host.
+    /// </summary>
+    public async Task<string?> FillPasswordAsync(string hostUrl, string? username, CancellationToken ct = default)
     {
         var input = BuildInput(hostUrl, username, password: null);
         var result = await git.RunAsync(["credential", "fill"], stdin: input, cancellationToken: ct);

@@ -54,7 +54,7 @@ jobs:
           name: windows
           if-no-files-found: error
           path: |
-            artifacts/GitPersona.exe
+            artifacts/GitPersona-portable.exe
             artifacts/GitPersona-arm64.exe
             artifacts/GitPersona-Setup.exe
             artifacts/installer/*.nupkg

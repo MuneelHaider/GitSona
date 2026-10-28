@@ -73,7 +73,7 @@ Version 1 is **not code-signed** (certificates cost money), and a new app has no
 - **Automatic account choice with rules.** "Everything in `C:\work` uses my work account." "Everything under `https://gitlab.company.com/team/` uses my company account." Anything else uses your default account.
 - **One-click switching from the tray.** Change your default account from the system tray without opening the window.
 - **Folder checker.** Pick any folder and see exactly which name, email and login Git will use there — and which file decided it. Mismatches are flagged.
-- **Clone with an account.** Clone a repository with the right account from the very first sign-in.
+- **Clone with an account.** Pick an account and GitPersona lists all of its repositories, public and private, so you can choose one from a dropdown (or paste a URL). It clones with the right login from the very first request. Repository lists are supported for GitHub (including Enterprise) and GitLab.
 - **Easy sign-in.** For GitHub, press *Sign in with GitHub* and sign in through your browser — GitPersona never sees your password. For other hosts, paste a personal access token; GitPersona checks it, fills in your details, and shows its scopes and expiry date.
 - **Token expiry warnings.** Find out a token is about to expire *before* a push fails.
 - **Safe by design.** Changes to your Git config are limited to one clearly marked block, backed up first, and removable with one click. See [Security & privacy](#security--privacy).
@@ -91,13 +91,13 @@ Version 1 is **not code-signed** (certificates cost money), and a new app has no
    - **GitLab, self-hosted GitLab, or another HTTPS host:** enter the server address (if self-hosted), paste a personal access token and press **Check token**. A *Create a token in your browser* link opens the right page with the scopes pre-selected.
 3. **Add rules** *(optional)*: map a folder (`C:\work`) or a remote (`https://gitlab.company.com/mycompany/**`) to an account. Anything that matches no rule uses your **default account**.
 4. **Check any folder** with **Check a folder** to see which account Git will use there.
-5. **Clone with an account** instead of plain `git clone`, so the first sign-in goes to the right account.
+5. **Clone with an account** instead of plain `git clone`: choose the account, pick a repository from the list (or paste a URL), choose a folder, and clone. The first sign-in goes to the right account.
 
 <details>
 <summary><b>Which token scopes do I need?</b></summary>
 
 - **GitHub:** a classic token with `repo`, or a fine-grained token with *Contents: read and write* on the repositories you use.
-- **GitLab:** a token with `read_repository` and `write_repository` (or `api`). For self-hosted GitLab, enter your server's address, e.g. `https://gitlab.company.com`.
+- **GitLab:** a token with `read_repository` and `write_repository` (or `api`). Add `read_api` too if you want the Clone page to list your repositories. For self-hosted GitLab, enter your server's address, e.g. `https://gitlab.company.com`.
 
 Browser sign-in for GitHub needs [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager) as your credential helper (it ships with Git for Windows). If it isn't, the app says so and offers the token route.
 </details>
@@ -238,7 +238,7 @@ dotnet run --project src/GitPersona.App        # run the app
 dotnet publish src/GitPersona.App -c Release -r win-x64
 ```
 
-`./build.ps1 -Version 1.0.0` (Windows) runs the tests and writes `GitPersona.exe`, `GitPersona-arm64.exe`, `GitPersona-Setup.exe` and `SHA256SUMS.txt` into `artifacts/`. On macOS/Linux use `bash build.sh <version> [runtime]`.
+`./build.ps1 -Version 1.0.0` (Windows) runs the tests and writes `GitPersona-portable.exe`, `GitPersona-arm64.exe`, `GitPersona-Setup.exe` and `SHA256SUMS.txt` into `artifacts/`. On macOS/Linux use `bash build.sh <version> [runtime]`.
 
 The executable is tens of MB because it bundles the .NET runtime. Trimming is deliberately off: it breaks Avalonia's reflection and bindings.
 

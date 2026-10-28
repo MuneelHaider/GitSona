@@ -105,7 +105,7 @@ public sealed partial class AccountEditorViewModel : ObservableObject
     public string TokenHelp => SelectedProvider switch
     {
         Provider.GitHub => "Needs the 'repo' scope (classic) or Contents read/write (fine-grained).",
-        Provider.GitLab => "Needs the read_repository and write_repository scopes (or api).",
+        Provider.GitLab => "Needs the read_repository and write_repository scopes (or api). Add read_api to list your repositories when cloning.",
         _ => "Use a token or password that Git can use over HTTPS on this host.",
     };
 
@@ -246,7 +246,7 @@ public sealed partial class AccountEditorViewModel : ObservableObject
         var url = SelectedProvider switch
         {
             Provider.GitHub => $"{h}/settings/tokens/new?scopes=repo&description=GitPersona",
-            Provider.GitLab => $"{h}/-/user_settings/personal_access_tokens?name=GitPersona&scopes=read_repository,write_repository",
+            Provider.GitLab => $"{h}/-/user_settings/personal_access_tokens?name=GitPersona&scopes=read_repository,write_repository,read_api",
             _ => null,
         };
         if (url is not null) await Dialogs.OpenUriAsync(url);

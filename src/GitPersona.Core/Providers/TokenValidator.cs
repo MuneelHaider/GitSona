@@ -245,14 +245,14 @@ public sealed class TokenValidator
         return Failure(ValidationOutcome.NetworkError, $"{host} answered with HTTP {code}.");
     }
 
-    static bool IsTlsFailure(Exception ex)
+    internal static bool IsTlsFailure(Exception ex)
     {
         for (var e = ex; e is not null; e = e.InnerException!)
             if (e is AuthenticationException) return true;
         return false;
     }
 
-    static string FirstTlsMessage(Exception ex)
+    internal static string FirstTlsMessage(Exception ex)
     {
         for (var e = ex; e is not null; e = e.InnerException!)
             if (e is AuthenticationException) return e.Message.TrimEnd('.') + ".";

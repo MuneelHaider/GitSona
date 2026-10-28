@@ -14,6 +14,7 @@ public sealed class AppHost
     public required SettingsStore Settings { get; init; }
     public IStartupRegistration StartupRegistration { get; } = Core.Platform.StartupRegistration.ForCurrentOS();
     public TokenValidator Validator { get; } = new();
+    public RepoLister RepoLister { get; } = new();
     public required UpdateService Updates { get; init; }
 
     /// <summary>Raised after accounts, rules, the active account or settings change, so the tray and pages can refresh.</summary>

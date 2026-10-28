@@ -3,7 +3,7 @@
     Runs the tests, then builds the Windows downloads into artifacts/.
 
 .DESCRIPTION
-    artifacts/GitPersona.exe            portable, win-x64 (self-contained, no .NET needed)
+    artifacts/GitPersona-portable.exe   portable, win-x64 (self-contained, no .NET needed)
     artifacts/GitPersona-arm64.exe      portable, win-arm64
     artifacts/GitPersona-Setup.exe      Velopack installer (per-user, no admin), win-x64
     artifacts/installer/                Velopack feed files (nupkg + releases.win.json) used for auto-update
@@ -38,7 +38,7 @@ $artifacts = Join-Path $PSScriptRoot "artifacts"
 if (Test-Path $artifacts) { Remove-Item $artifacts -Recurse -Force }
 New-Item -ItemType Directory $artifacts | Out-Null
 
-$runtimes = @{ "win-x64" = "GitPersona.exe"; "win-arm64" = "GitPersona-arm64.exe" }
+$runtimes = @{ "win-x64" = "GitPersona-portable.exe"; "win-arm64" = "GitPersona-arm64.exe" }
 foreach ($rid in $runtimes.Keys) {
     $out = Join-Path $artifacts "publish/$rid"
     Invoke-Step "Publish $rid" {
