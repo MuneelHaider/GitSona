@@ -1,72 +1,186 @@
+<div align="center">
+
+<img src="src/GitPersona.App/Assets/app.png" alt="GitPersona logo" width="96" height="96">
+
 # GitPersona
 
-**Use the right Git account every time — on Windows, macOS and Linux.**
+**Use the right Git account, every time.**<br>
+Switch between GitHub, GitLab and other Git accounts automatically — on Windows, macOS and Linux.
 
-GitPersona manages several Git accounts (GitHub, GitLab, self-hosted GitLab, any HTTPS Git host) and controls which one Git uses, both automatically (by rules) and with one click from the tray. It uses Git's own mechanisms — `includeIf`, `credential.<url>.username` and your credential helper — and never reinvents them. **No SSH anywhere; everything is HTTPS.**
+[![CI](https://github.com/MuneelHaider/GIT/actions/workflows/ci.yml/badge.svg)](https://github.com/MuneelHaider/GIT/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/MuneelHaider/GIT?label=release)](https://github.com/MuneelHaider/GIT/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
-> Screenshots: _(placeholder — add `docs/screenshots/accounts.png`, `rules.png`, `checker.png`)_
+[**Install**](#how-to-install) · [Features](#features) · [Quick start](#quick-start) · [FAQ](#faq) · [Contributing](#contributing)
 
-## The problem it solves
+</div>
 
-You have a personal GitHub account and a company GitLab account (or two accounts on the same host). Out of the box:
+<!-- TODO: add screenshots, e.g. docs/screenshots/accounts.png, rules.png, checker.png -->
 
-1. Commits in company repos silently use your personal email, or the other way round.
-2. Git's credential cache returns **one login per host**, so with two accounts on one host pushes fail or go to the wrong account.
-3. Tokens expire (GitLab PATs especially) and you find out when a push fails.
+---
 
-Tools that only swap global `user.name`/`user.email` don't touch the login, and fail silently when you forget to click. GitPersona's job is to **never pick the wrong account**: rules apply automatically, and a built-in checker shows (and flags a mismatch) exactly what Git will use in any folder.
+## How to Install
 
-## Download
+**You only need one thing first: [Git](https://git-scm.com/downloads).** (On Windows, install *Git for Windows*.) GitPersona tells you if Git is missing. You do **not** need to install .NET — it is built in.
 
-Get the latest build from the [Releases](../../releases) page.
+### Windows (recommended: installer)
 
-| Platform | Download | Notes |
-|---|---|---|
-| Windows x64 | `GitPersona-Setup.exe` | Installer. Per-user, **no admin rights**. Start Menu shortcut, appears in *Installed apps*, optional auto-update. |
-| Windows x64 | `GitPersona.exe` | Portable. Runs from anywhere (Downloads, a USB stick). No .NET needed. No auto-update. |
-| Windows ARM64 | `GitPersona-arm64.exe` | Portable. |
-| macOS | `GitPersona-osx-*-Portable.zip` / `.pkg` | Apple Silicon (`osx-arm64`) and Intel (`osx-x64`). Unsigned — see below. |
-| Linux x64 | `GitPersona-linux-x64.tar.gz` / AppImage | Needs a desktop with tray (StatusNotifier/AppIndicator) support for the tray icon. |
+1. Install [Git for Windows](https://git-scm.com/download/win) if you don't have it.
+2. Go to the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) and download **`GitPersona-Setup.exe`**.
+3. Run it. No admin rights needed — it installs for your user only and adds a Start Menu shortcut.
+4. If Windows shows **"Windows protected your PC"**, click **More info → Run anyway** ([why?](#windows-smartscreen-warning)).
 
-The only thing you must have installed is **Git** (Git for Windows on Windows). GitPersona detects it and tells you if it's missing.
+Prefer not to install anything? Download **`GitPersona.exe`** (Windows x64) or **`GitPersona-arm64.exe`** (Windows on ARM) instead. These are portable: run them from anywhere, including a USB stick. Portable builds don't auto-update.
+
+### macOS
+
+1. Install Git (`xcode-select --install`, or [git-scm.com](https://git-scm.com/download/mac)).
+2. From the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) download the archive for your Mac:
+   - Apple Silicon (M1/M2/M3/…): **`GitPersona-osx-arm64.tar.gz`**
+   - Intel: **`GitPersona-osx-x64.tar.gz`**
+3. Unpack it and start it:
+   ```bash
+   tar -xzf GitPersona-osx-arm64.tar.gz
+   ./GitPersona
+   ```
+4. The app isn't signed by Apple yet. If macOS refuses to open it, run `xattr -d com.apple.quarantine ./GitPersona` once, or right-click → **Open**.
+
+### Linux
+
+1. Install Git (`sudo apt install git`, `sudo dnf install git`, …).
+2. From the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) download **`GitPersona-linux-x64.tar.gz`**.
+3. Unpack it and start it:
+   ```bash
+   tar -xzf GitPersona-linux-x64.tar.gz
+   ./GitPersona
+   ```
+4. For the tray icon you need a desktop with StatusNotifier/AppIndicator support (on GNOME, install the *AppIndicator* extension). The main window works without it.
+
+> **macOS and Linux note:** these builds are produced and tested by CI but haven't been run on real machines by the author yet. They should work — if they don't, please [open an issue](https://github.com/MuneelHaider/GIT/issues/new).
+
+### Verify your download (optional)
+
+Every release includes **`SHA256SUMS.txt`**. To check a file you downloaded:
+
+```powershell
+# Windows (PowerShell) — compare the output with the matching line in SHA256SUMS.txt
+Get-FileHash .\GitPersona-Setup.exe -Algorithm SHA256
+```
+```bash
+# macOS / Linux
+sha256sum -c --ignore-missing SHA256SUMS.txt
+```
+
+Every release is built from this repository by the public [release workflow](.github/workflows/release.yml), so you can see exactly how each file was made.
 
 ### Windows SmartScreen warning
 
-v1 ships **unsigned**. When you run a downloaded `.exe`, Windows SmartScreen may show **"Windows protected your PC"**. This happens because the file has no code-signing certificate and not enough download reputation yet — it does not mean the file was found to be malicious.
+Version 1 is **not code-signed** (certificates cost money), and a new app has no download reputation yet — so Windows shows a warning. It does **not** mean the file was found to be malicious. Click **More info → Run anyway**, and use the checksum above if you want to be sure the file is the one built from this source.
 
-To run it anyway: click **More info → Run anyway**.
+---
 
-Removing the warning needs a paid code-signing certificate. Until then you can verify what you downloaded:
+## Features
 
-- The full source is in this repository, and every release is built by the public workflow in `.github/workflows/release.yml`.
-- Each release includes **`SHA256SUMS.txt`**. Check your download:
-  - Windows: `Get-FileHash .\GitPersona.exe -Algorithm SHA256` and compare with the line in `SHA256SUMS.txt`.
-  - macOS/Linux: `sha256sum -c --ignore-missing SHA256SUMS.txt`
+- **Many accounts, one app.** GitHub, GitLab, self-hosted GitLab, GitHub Enterprise or any HTTPS Git host — including **two accounts on the same host** (e.g. personal and work on `github.com`).
+- **Automatic account choice with rules.** "Everything in `C:\work` uses my work account." "Everything under `https://gitlab.company.com/team/` uses my company account." Anything else uses your default account.
+- **One-click switching from the tray.** Change your default account from the system tray without opening the window.
+- **Folder checker.** Pick any folder and see exactly which name, email and login Git will use there — and which file decided it. Mismatches are flagged.
+- **Clone with an account.** Clone a repository with the right account from the very first sign-in.
+- **Easy sign-in.** For GitHub, press *Sign in with GitHub* and sign in through your browser — GitPersona never sees your password. For other hosts, paste a personal access token; GitPersona checks it, fills in your details, and shows its scopes and expiry date.
+- **Token expiry warnings.** Find out a token is about to expire *before* a push fails.
+- **Safe by design.** Changes to your Git config are limited to one clearly marked block, backed up first, and removable with one click. See [Security & privacy](#security--privacy).
+- **No SSH, no telemetry.** Everything is HTTPS; nothing is sent anywhere except to your own Git host.
+- **Cross-platform.** Windows, macOS and Linux, with optional start-at-login and a single running instance.
+- **Free and open source** under the MIT license.
 
-Signing is a pluggable, secret-driven CI step: set the repository secret `GITPERSONA_SIGN_PARAMS` and the Windows installer is signed with no other change. For free signing of open-source projects, the [SignPath Foundation](https://signpath.org/) program is worth investigating.
-
-### macOS Gatekeeper
-
-The macOS build is not signed or notarised either. If macOS says the app can't be opened, right-click it → **Open**, or run `xattr -dr com.apple.quarantine /Applications/GitPersona.app`.
+---
 
 ## Quick start
 
-1. **Start GitPersona.** The first-run screen checks Git, checks that Git has a credential helper (it offers to set one — it never changes anything without asking), and offers to connect GitPersona to your global Git config (it backs up your config first).
-2. **Add an account** (everything is in the app; no files to edit). Pick the service:
-   - **GitHub:** press **Sign in with GitHub**. Git Credential Manager (bundled with Git for Windows) opens GitHub's own sign-in in your browser; GitPersona never sees your password. When you're back, it fills in your username and name from GitHub. A second GitHub account works the same way: type its username first, then sign in.
-   - **GitLab, self-hosted GitLab, GitHub Enterprise, or another HTTPS Git host:** enter your server address (for self-hosted), paste a personal access token and press *Check token*. A **Create a token in your browser** link opens the right page with the scopes pre-selected. GitPersona asks the server who the token belongs to, fills in username, name and email where available, shows the scopes and expiry, and warns if a required scope is missing. You can also use a token for GitHub via *Use a personal access token instead*.
-
-   Browser sign-in needs Git Credential Manager as your credential helper. If it isn't, the app says so and offers the token route.
-3. **Add rules** (optional): a folder (`C:\work`) or a remote (`https://gitlab.company.com/mycompany/**`) maps to an account. Anything matching no rule uses your **default account**, which you switch from the tray.
-4. **Check any folder** with *Check a folder* to see which name, email and login Git will use there, and which file decided each.
+1. **Start GitPersona.** A short first-run check makes sure Git is installed and has a credential helper, and offers to connect GitPersona to your global Git config. It never changes anything without asking, and backs up your config first.
+2. **Add an account.**
+   - **GitHub:** press **Sign in with GitHub** and finish signing in in your browser. (A second GitHub account works the same way: type its username first, then sign in.)
+   - **GitLab, self-hosted GitLab, or another HTTPS host:** enter the server address (if self-hosted), paste a personal access token and press **Check token**. A *Create a token in your browser* link opens the right page with the scopes pre-selected.
+3. **Add rules** *(optional)*: map a folder (`C:\work`) or a remote (`https://gitlab.company.com/mycompany/**`) to an account. Anything that matches no rule uses your **default account**.
+4. **Check any folder** with **Check a folder** to see which account Git will use there.
 5. **Clone with an account** instead of plain `git clone`, so the first sign-in goes to the right account.
 
-### Tokens you need
+<details>
+<summary><b>Which token scopes do I need?</b></summary>
 
-- **GitHub:** classic token with `repo`, or a fine-grained token with *Contents: read and write* on the repositories you use.
-- **GitLab:** token with `read_repository` and `write_repository` (or `api`). Self-hosted GitLab works; enter your server's address (`https://gitlab.company.com`).
+- **GitHub:** a classic token with `repo`, or a fine-grained token with *Contents: read and write* on the repositories you use.
+- **GitLab:** a token with `read_repository` and `write_repository` (or `api`). For self-hosted GitLab, enter your server's address, e.g. `https://gitlab.company.com`.
+
+Browser sign-in for GitHub needs [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager) as your credential helper (it ships with Git for Windows). If it isn't, the app says so and offers the token route.
+</details>
+
+---
+
+## Why GitPersona?
+
+If you have a personal GitHub account and a work GitLab account (or two accounts on one host), Git out of the box has three problems:
+
+1. Commits in work repositories silently use your personal email — or the other way round.
+2. Git's credential cache keeps **one login per host**, so with two accounts on one host, pushes fail or go to the wrong account.
+3. Tokens expire (GitLab ones especially) and you only find out when a push fails.
+
+Tools that only swap your global `user.name` / `user.email` don't touch the login, and fail silently when you forget to click. GitPersona's goal is to **never pick the wrong account**: rules apply automatically, and the built-in checker shows what Git will use in any folder.
+
+It does this with Git's own features — `includeIf`, `credential.<url>.username` and your existing credential helper — rather than inventing its own.
+
+---
+
+## FAQ
+
+**Does GitPersona work with SSH?**
+No. GitPersona manages HTTPS only. SSH remotes are ignored and flagged in the checker.
+
+**Will it mess up my existing `.gitconfig`?**
+No. It adds one marked block at the very end of your global Git config, makes a timestamped backup before the first change, and can remove everything cleanly (see [Uninstalling](#uninstalling)).
+
+**Where are my tokens stored?**
+In your operating system's credential helper (Git Credential Manager, Keychain, libsecret, …) — the same place Git already uses. GitPersona itself never writes tokens to disk.
+
+**My folder rule didn't apply during `git clone`.**
+Expected: the repository doesn't exist yet, so Git can't match a folder rule. Use **Clone with an account** in the app, or put your username in the URL yourself.
+
+**Git says the wrong account anyway.**
+Open **Check a folder** — it shows which file decided each value. Common causes are a `user.email` set later in `~/.gitconfig` or in the repo's own `.git/config`, or an IDE that uses its own built-in GitHub sign-in and bypasses the credential helper.
+
+**Does it check for updates?**
+Only the installed Windows version, once a day if you leave that on, and it only updates when you click. Portable builds never update themselves.
+
+<details>
+<summary><b>All known limitations</b></summary>
+
+- `hasconfig:remote` rules (remote URL rules) need **Git 2.36 or newer**. On older Git the option is disabled with a clear message. Folder rules work on any Git.
+- **Folder rules don't apply to the initial `git clone`** — see the FAQ above.
+- If an **IDE or another tool injects its own credentials**, that can bypass the credential helper and therefore GitPersona.
+- A default account only covers the hosts it has a login for; a rule's account only supplies its own host's login. Use the checker when a repository talks to a host the matching account doesn't cover.
+- A `user.email`, `user.name` or credential username that **you** set *after* GitPersona's block in `~/.gitconfig`, or inside a repository's `.git/config`, overrides the app. GitPersona warns about the former, and the checker shows the latter.
+- The macOS and Linux packages are not code-signed.
+</details>
+
+---
+
+## Security & privacy
+
+- Tokens are **never written to disk by GitPersona, never logged, and never shown again** after you enter them.
+- Tokens are passed to Git on **stdin only** — never in a URL or command-line argument. Input is validated so nothing you type can inject extra commands or credential lines.
+- Only `https://` hosts are accepted.
+- **No telemetry.** The only network requests are (1) token validation against *your own* Git host, and (2) in the installed Windows build, an optional once-a-day check of GitHub Releases for a new version.
+- TLS certificate validation is **never disabled**. For a self-hosted server with an internal CA, install the CA in your OS trust store. Redirects aren't followed when validating a token, so a token can't be forwarded to another host.
+- The tests never touch your real Git config or credentials.
+
+Found a security problem? Please report it privately through [GitHub's security advisories](https://github.com/MuneelHaider/GIT/security/advisories/new) rather than a public issue.
+
+---
 
 ## How it works
+
+<details>
+<summary><b>Technical details</b></summary>
 
 GitPersona keeps its own files and adds **one marked block at the very end** of your global Git config (`~/.gitconfig`, or the XDG file if that is the one you use):
 
@@ -88,101 +202,99 @@ GitPersona keeps its own files and adds **one marked block at the very end** of 
 
 App-data folder: `%APPDATA%\GitPersona` (Windows), `~/Library/Application Support/GitPersona` (macOS), `~/.config/GitPersona` (Linux). Set `GITPERSONA_DATA_DIR` to use a different one.
 
-- All fragment writes go through `git config --file`, so Git does the escaping. The marker block is the only hand-written text, and it is idempotent: re-running never duplicates it, and it moves itself back to the end if you add settings below it.
-- Before the **first** change your global config is copied to `.gitconfig.gitpersona-backup-<timestamp>`.
+- All fragment writes go through `git config --file`, so Git does the escaping. The marker block is the only hand-written text; it is idempotent and moves itself back to the end if you add settings below it.
+- Before the **first** change, your global config is copied to `.gitconfig.gitpersona-backup-<timestamp>`.
 - The default account comes first and rules after it, so **rules override the default**.
 
-### Rules: the last match wins
+**Rules: the last match wins.** Rules are Git `includeIf` blocks. When several match one repository, Git applies them in file order and the last one wins. The Rules page is an ordered list you can reorder — put broad rules first and specific ones below.
 
-Rules are Git `includeIf` blocks. When several match one repository Git applies them in file order and **the last one wins**. The Rules page is an ordered list you can reorder, and says so. Put broad rules first and specific ones below.
+- *Folder rule:* `includeIf "gitdir/i:C:/work/"` (case-insensitive on Windows and macOS, `gitdir` on Linux).
+- *Remote rule:* `includeIf "hasconfig:remote.*.url:https://gitlab.company.com/mycompany/**"` (Git 2.36+). Also matches URLs that contain a login, like `https://me@gitlab.company.com/...`.
 
-- **Folder rule:** `includeIf "gitdir/i:C:/work/"`. Windows paths use forward slashes and end in `/`. `gitdir/i` (case-insensitive) on Windows and macOS, `gitdir` on Linux.
-- **Remote rule:** `includeIf "hasconfig:remote.*.url:https://gitlab.company.com/mycompany/**"`, which needs **Git 2.36+**. Older Git: the option is disabled with a clear message. Remote rules also match URLs that contain a login (`https://me@gitlab.company.com/...`).
+**Several accounts on one host.** `credential.<url>.username` makes the credential helper look up the stored login *for that username* on that host, which is what lets two accounts share `gitlab.com`. Tokens are saved with `git credential approve` and removed with `git credential reject`.
 
-### Several accounts on one host
-
-`credential.<url>.username` makes the credential helper look up the stored login **for that username** on that host, which is what lets two accounts share `gitlab.com`. Tokens are saved with `git credential approve` and removed with `git credential reject`; the app never stores them.
-
-## Security
-
-- Tokens are **never written to disk by GitPersona, never logged, never shown after entry** (password box). "Test login" only reports whether a login exists.
-- Tokens travel on **stdin only** — never in a URL or a command-line argument. Values are validated so a newline cannot inject extra credential-protocol lines.
-- Only `https://` hosts are accepted. Anything you type (paths, hosts, usernames) is treated as data and validated or escaped.
-- **No telemetry.** The only network requests are token validation to the account's own host, and — in the installed build, if you leave it on — a once-a-day check of GitHub Releases for a new version. Updates are applied only when you click. The portable build never updates itself.
-- Certificate validation is **never disabled**. For a self-hosted server with an internal CA, install the CA in your OS trust store; if validation fails you can still save the account without checking the token. Redirects are not followed when validating, so a token can't be forwarded to another host.
-
-## Platform behaviour
+**Platform behaviour**
 
 | | Windows | macOS | Linux |
 |---|---|---|---|
-| Start at login (off by default) | `HKCU\...\Run` value `GitPersona` = `"<exe>" --minimized` | `~/Library/LaunchAgents/io.github.gitpersona.plist` | `~/.config/autostart/gitpersona.desktop` |
+| Start at login (off by default) | `HKCU\...\Run` value `GitPersona` | `~/Library/LaunchAgents/io.github.gitpersona.plist` | `~/.config/autostart/gitpersona.desktop` |
 | Credential helper suggested | `manager` (Git Credential Manager) | `osxkeychain` | `libsecret` or GCM, if installed |
-| Single instance | one running instance; launching again shows its window (lock file + named pipe, all OSes) | same | same |
 
-- The login entry is per-user — no admin rights, no Task Scheduler, no service. If a portable exe is moved, the entry is repointed the next time you run it; if the exe is deleted, the OS just skips the entry.
-- `--minimized` starts straight to the tray with no window.
-- Closing the window hides it to the tray; **Quit** in the tray menu really exits. You are told once.
+Start-at-login is per-user — no admin rights, Task Scheduler or service. `--minimized` starts straight into the tray. Closing the window hides it to the tray; **Quit** in the tray menu really exits. Only one instance runs; launching again shows the existing window.
+</details>
+
+---
 
 ## Uninstalling
 
-Use **Settings → Remove GitPersona from Git** (it removes the managed block, and optionally restores the backup, removes the logins GitPersona stored, and deletes its data). It also turns off start-at-login.
+1. Open **Settings → Remove GitPersona from Git…**. It removes the managed block from your Git config, turns off start-at-login, and can optionally restore your original config backup, remove the logins GitPersona stored, and delete its own data.
+2. Then remove the app itself:
+   - **Windows installer:** uninstall from *Installed apps*. (Step 1 is done automatically.)
+   - **Windows portable, macOS, Linux:** delete the app.
 
-- **Windows installer:** uninstalling from *Installed apps* removes the managed block and the startup entry automatically.
-- **Windows portable / macOS / Linux:** run *Remove GitPersona from Git* first, then delete the app. (Automatic cleanup on uninstall is only possible with the Windows installer.)
-- Restoring the backup puts your pre-GitPersona config back exactly and discards any edits you made to the file since. Plain removal leaves everything else in the file untouched.
+Restoring the backup puts your pre-GitPersona config back exactly and discards any edits you made to that file since. Plain removal leaves everything else in the file untouched.
 
-## Limits (please read)
-
-- Rules use Git's `includeIf`; **`hasconfig:remote` needs Git 2.36+**.
-- **Folder rules don't apply to the initial `git clone`** (the repository doesn't exist yet). Use *Clone with an account* or put the username in the URL yourself.
-- If an **IDE or another tool injects its own credentials** (for example a built-in GitHub sign-in), that can bypass the credential helper and GitPersona.
-- GitPersona manages **HTTPS only**. SSH remotes are ignored and flagged in the checker.
-- A default account only covers the hosts it has a login for; a rule's account only supplies its own host's login. Use the checker when a repo talks to a host the matching account doesn't cover.
-- A `user.email`, `user.name` or credential username that **you** set after GitPersona's block in `~/.gitconfig`, or inside a repo's own `.git/config`, overrides the app. GitPersona warns about the former and the checker shows the latter.
-- Linux: the tray needs StatusNotifier/AppIndicator support (on GNOME install the AppIndicator extension). The window works without it.
-- The macOS and Linux packages are built by CI and are not code-signed. See _Project status_ below for what has been verified.
+---
 
 ## Build from source
 
-Requires the .NET 10 SDK and Git.
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and Git.
 
 ```bash
-dotnet test                                      # run the tests
-dotnet run --project src/GitPersona.App          # run the app
+git clone https://github.com/MuneelHaider/GIT.git
+cd GIT
+
+dotnet test                                    # run the tests
+dotnet run --project src/GitPersona.App        # run the app
 
 # One self-contained file, no .NET needed to run it:
 dotnet publish src/GitPersona.App -c Release -r win-x64
 ```
 
-`./build.ps1 -Version 1.0.0` runs the tests and writes `GitPersona.exe`, `GitPersona-arm64.exe`, `GitPersona-Setup.exe` (Velopack) and `SHA256SUMS.txt` into `artifacts/`. On macOS/Linux use `bash build.sh <version> [runtime]`.
+`./build.ps1 -Version 1.0.0` (Windows) runs the tests and writes `GitPersona.exe`, `GitPersona-arm64.exe`, `GitPersona-Setup.exe` and `SHA256SUMS.txt` into `artifacts/`. On macOS/Linux use `bash build.sh <version> [runtime]`.
 
-The exe is tens of MB because it bundles the .NET runtime. Trimming is deliberately off: it breaks Avalonia's reflection and bindings.
+The executable is tens of MB because it bundles the .NET runtime. Trimming is deliberately off: it breaks Avalonia's reflection and bindings.
 
-### Releasing
-
-Push a tag: `git tag v1.0.0 && git push origin v1.0.0`. The workflow runs the tests on all three OSes, builds every package, writes `SHA256SUMS.txt` and attaches everything to a GitHub Release. The tag is the version shown in the app.
-
-For the update check to work, set `RepositoryUrl` in `src/GitPersona.App/GitPersona.App.csproj` to your GitHub repository (it ships as a placeholder, and update checks stay off until you do).
-
-## Project layout
+<details>
+<summary><b>Project layout</b></summary>
 
 ```
 src/GitPersona.Core/           accounts, config writing, git runner, rules, checker, provider clients — no UI
 src/GitPersona.App/            Avalonia UI (MVVM, compiled bindings) + tray
-tests/GitPersona.Core.Tests/   xUnit
+tests/GitPersona.Core.Tests/   xUnit tests
 tools/IconGen/                 regenerates the app icon (png / ico / icns)
 ```
 
-Tests never touch your real Git config or credentials: they set `GIT_CONFIG_GLOBAL` to a temp file, `GIT_CONFIG_NOSYSTEM=1`, use a temp app-data folder, and use `credential.helper = store --file=<temp>`. Rule ordering is verified with real `git config` lookups in temp repositories; HTTP is mocked.
+Tests never touch your real Git config or credentials: they set `GIT_CONFIG_GLOBAL` to a temp file, `GIT_CONFIG_NOSYSTEM=1`, use a temp app-data folder and a temp credential store. Rule ordering is verified with real `git config` lookups in temp repositories; HTTP is mocked.
+</details>
 
-## Project status
+<details>
+<summary><b>Making a release (maintainers)</b></summary>
 
-What has been verified, and how:
+Push a tag: `git tag v1.0.0 && git push origin v1.0.0`. The workflow runs the tests on Windows, macOS and Linux, builds every package, writes `SHA256SUMS.txt` and attaches everything to a GitHub Release. The tag is the version shown in the app.
 
-- **Core logic** (accounts, config writing, rules, checker, provider validation, clone/fix-remote, startup entries, single instance): automated tests, run against real `git` in sandboxed temp config.
-- **Windows app:** the published single-file `GitPersona.exe` was launched with .NET removed from `PATH`; the UI was driven end to end (add account → set default → connect to Git config), and `--minimized` and the single-instance wake-up were checked.
-- **Not yet verified:** running the Windows *installer* and its uninstall hook on a clean machine; the tray menu on any OS beyond the app starting without error; real token validation against live GitHub/GitLab servers (covered with mocked HTTP only); and the **macOS and Linux apps, which have been compiled and published but not run** on real machines. Their OS-specific file formats (LaunchAgent, autostart) are unit-tested, and CI runs the whole suite on Windows, macOS and Linux. Please report issues.
+For the in-app update check, `RepositoryUrl` in `src/GitPersona.App/GitPersona.App.csproj` must point at this GitHub repository. Update checks stay off while it is the `OWNER` placeholder.
+
+Windows signing is a pluggable CI step: set the repository secret `GITPERSONA_SIGN_PARAMS` and the installer is signed with no other change. Free signing for open-source projects is available through the [SignPath Foundation](https://signpath.org/).
+</details>
+
+---
+
+## Contributing
+
+Contributions are welcome — bug reports, ideas, docs and code.
+
+- **Found a bug or have an idea?** [Open an issue](https://github.com/MuneelHaider/GIT/issues/new). For bugs, please include your OS, your Git version (`git --version`) and what the **Check a folder** screen shows.
+- **Want to change code?** Fork the repo, create a branch, make your change, run `dotnet test`, and open a pull request. CI runs the full test suite on Windows, macOS and Linux.
+- **Testing on macOS or Linux** is especially valuable right now — see below.
+
+### Project status
+
+- **Verified:** core logic (accounts, config writing, rules, checker, provider validation, clone, startup entries, single instance) is covered by automated tests against real `git` in a sandboxed config. The Windows app was run end to end (add account → set default → connect to Git config).
+- **Not yet verified:** the Windows *installer* and uninstaller on a clean machine; the tray menu beyond the app starting; real token validation against live GitHub/GitLab servers (tested with mocked HTTP only); and the **macOS and Linux apps, which compile and publish but haven't been run on real machines**. Reports from those platforms are very welcome.
+
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE) — free to use, modify and share.
