@@ -28,10 +28,10 @@ jobs:
 
       # Builds the Avalonia app too, so UI compile errors (XAML, bindings) surface on every OS.
       - name: Build
-        run: dotnet build GitPersona.slnx -c Release
+        run: dotnet build GitSona.slnx -c Release
 
       - name: Test
-        run: dotnet test GitPersona.slnx -c Release --no-build
+        run: dotnet test GitSona.slnx -c Release --no-build
 
   # Compile-only check that the single-file publish works for every target we ship.
   publish-check:
@@ -50,4 +50,4 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - run: dotnet publish src/GitPersona.App -c Release -r ${{ matrix.rid }} -o out
+      - run: dotnet publish src/GitSona.App -c Release -r ${{ matrix.rid }} -o out

@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GitSona.App.ViewModels"
+             xmlns:core="using:GitSona.Core"
+             x:Class="GitSona.App.Views.CloneView"
+             x:DataType="vm:CloneViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="14">
+      <StackPanel>
+        <TextBlock Text="Clone with an account" Classes="h1" />
+        <TextBlock Classes="muted" TextWrapping="Wrap"
+                   Text="Folder rules cannot apply before a repository exists, so the first sign-in could go to the wrong account. Cloning here puts the account's login in the URL, so it is right from the start." />
+      </StackPanel>
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Account" Classes="muted" />
+            <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" MinWidth="300">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="core:Account">
+                  <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Repository" Classes="muted" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <ComboBox ItemsSource="{Binding Repos}" SelectedItem="{Binding SelectedRepo}"
+                        PlaceholderText="Pick one of this account's repositories…"
+                        HorizontalAlignment="Stretch" IsEnabled="{Binding !IsLoadingRepos}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="core:RemoteRepo">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding FullName}" />
+                      <TextBlock Text="private" Classes="muted" FontSize="12" VerticalAlignment="Center" IsVisible="{Binding IsPrivate}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshReposCommand}" IsEnabled="{Binding !IsLoadingRepos}" />
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsLoadingRepos}">
+              <ProgressBar IsIndeterminate="True" Width="80" VerticalAlignment="Center" />
+              <TextBlock Text="Loading repositories…" Classes="muted" FontSize="12" />
+            </StackPanel>
+            <TextBlock Text="{Binding ReposNote}" Classes="muted" FontSize="12" TextWrapping="Wrap"
+                       Classes.error="{Binding ReposNoteIsError}"
+                       IsVisible="{Binding ReposNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Repository URL (https)" Classes="muted" />
+            <TextBox Text="{Binding Url}" Watermark="Or paste a URL, e.g. https://gitlab.company.com/mycompany/app.git" />
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Clone into folder" Classes="muted" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <TextBox Text="{Binding Destination}" />
+              <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+            </Grid>
+            <TextBlock Text="{Binding DestinationHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Content="Clone" Classes="accent" Command="{Binding CloneCommand}" IsEnabled="{Binding !IsBusy}" />
+            <ProgressBar IsIndeterminate="True" Width="80" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Classes.error="{Binding StatusIsError}"
+                     IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <Button Content="Open folder" Command="{Binding OpenFolderCommand}" HorizontalAlignment="Left"
+                  IsVisible="{Binding ClonedPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

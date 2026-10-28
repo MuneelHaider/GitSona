@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GitSona.App.ViewModels"
+             x:Class="GitSona.App.Views.AccountsView"
+             x:DataType="vm:AccountsViewModel">
+
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+      <Button DockPanel.Dock="Right" Content="Add account" Classes="accent" Command="{Binding AddCommand}" VerticalAlignment="Center" />
+      <StackPanel>
+        <TextBlock Text="Accounts" Classes="h1" />
+        <TextBlock Text="Each account sets who your commits are from and which login Git uses on its host."
+                   Classes="muted" TextWrapping="Wrap" />
+      </StackPanel>
+    </DockPanel>
+
+    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Margin="0,10,0,0" TextWrapping="Wrap"
+               IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+    <Border Classes="card" IsVisible="{Binding IsEmpty}" VerticalAlignment="Top">
+      <StackPanel Spacing="10">
+        <TextBlock Text="Connect your first account" Classes="h2" />
+        <TextBlock TextWrapping="Wrap" Classes="muted"
+                   Text="Add your personal and work accounts. GitSona then makes sure Git uses the right name, email and login for each repository." />
+        <Button Content="Add an account" Classes="accent" Command="{Binding AddCommand}" HorizontalAlignment="Left" />
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer>
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:AccountItemViewModel">
+            <Border Classes="card" Margin="0,0,0,10">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="3">
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="{Binding Title}" Classes="h2" />
+                    <Border Classes="badge" IsVisible="{Binding IsActive}">
+                      <TextBlock Text="Default" FontSize="11" Classes="ok" />
+                    </Border>
+                  </StackPanel>
+                  <TextBlock Text="{Binding Subtitle}" Classes="muted" />
+                  <TextBlock Text="{Binding LoginText}" />
+                  <TextBlock Text="{Binding IdentityText}" />
+                  <TextBlock Text="{Binding ExpiryText}" IsVisible="{Binding HasExpiry}"
+                             Classes.warn="{Binding ExpiryIsWarn}" Classes.error="{Binding ExpiryIsBad}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center" MinWidth="130">
+                  <Button Content="Make default" Command="{Binding MakeDefaultCommand}" IsVisible="{Binding !IsActive}" HorizontalAlignment="Stretch" />
+                  <Button Content="Test login" Command="{Binding TestLoginCommand}" HorizontalAlignment="Stretch" />
+                  <Button Content="Edit" Command="{Binding EditCommand}" HorizontalAlignment="Stretch" />
+                  <Button Content="Delete" Command="{Binding DeleteCommand}" HorizontalAlignment="Stretch" />
+                </StackPanel>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

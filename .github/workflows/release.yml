@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - run: dotnet test GitPersona.slnx -c Release
+      - run: dotnet test GitSona.slnx -c Release
 
   windows:
     name: Windows (x64 + arm64, installer)
@@ -41,12 +41,12 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Optional code signing. Add a repository secret GITPERSONA_SIGN_PARAMS (a signtool parameter string,
+      # Optional code signing. Add a repository secret GITSONA_SIGN_PARAMS (a signtool parameter string,
       # or the arguments for a signing service such as SignPath) and the installer is signed; without it, unsigned.
       - name: Build portable exes and installer
         shell: pwsh
         env:
-          GITPERSONA_SIGN_PARAMS: ${{ secrets.GITPERSONA_SIGN_PARAMS }}
+          GITSONA_SIGN_PARAMS: ${{ secrets.GITSONA_SIGN_PARAMS }}
         run: ./build.ps1 -Version "${{ needs.meta.outputs.version }}" -SkipTests
 
       - uses: actions/upload-artifact@v4
@@ -54,9 +54,9 @@ jobs:
           name: windows
           if-no-files-found: error
           path: |
-            artifacts/GitPersona-portable.exe
-            artifacts/GitPersona-arm64.exe
-            artifacts/GitPersona-Setup.exe
+            artifacts/GitSona-portable.exe
+            artifacts/GitSona-arm64.exe
+            artifacts/GitSona-Setup.exe
             artifacts/installer/*.nupkg
             artifacts/installer/releases.win.json
             artifacts/installer/assets.win.json
@@ -127,6 +127,6 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" dist/* \
             --repo "$GITHUB_REPOSITORY" \
-            --title "GitPersona $GITHUB_REF_NAME" \
+            --title "GitSona $GITHUB_REF_NAME" \
             --generate-notes \
             --notes "Downloads are unsigned in v1. Verify them against SHA256SUMS.txt (see the README for the Windows SmartScreen note)."

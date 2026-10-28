@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GitSona.App.ViewModels"
+        x:Class="GitSona.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="GitSona"
+        Icon="/Assets/app.png"
+        Width="1020" Height="700" MinWidth="820" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource GpWindowBackground}">
+
+  <Grid ColumnDefinitions="210,*">
+
+    <!-- Sidebar -->
+    <Border Grid.Column="0" Background="{DynamicResource GpSidebarBackground}" Padding="12,16">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Version}" Classes="muted" FontSize="12" Margin="8,0,0,0" />
+        <StackPanel Spacing="14">
+          <StackPanel Orientation="Horizontal" Spacing="10" Margin="8,0,0,0">
+            <Image Source="/Assets/app.png" Width="28" Height="28" />
+            <TextBlock Text="GitSona" Classes="h2" VerticalAlignment="Center" />
+          </StackPanel>
+          <ListBox ItemsSource="{Binding NavItems}" SelectedItem="{Binding SelectedNav}" Background="Transparent">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:NavItem">
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4">
+                  <TextBlock Text="{Binding Glyph}" Width="20" TextAlignment="Center" />
+                  <TextBlock Text="{Binding Title}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- Content -->
+    <DockPanel Grid.Column="1" Margin="24,20,24,16">
+      <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Banners}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:BannerViewModel">
+            <Border Classes="banner" Classes.warning="{Binding IsWarning}" Classes.error="{Binding IsError}" Classes.info="{Binding IsInfo}">
+              <DockPanel>
+                <Button DockPanel.Dock="Right" Content="{Binding ActionText}" Command="{Binding ActCommand}"
+                        IsVisible="{Binding HasAction}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </DockPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <ContentControl Content="{Binding CurrentPage}" />
+    </DockPanel>
+
+    <!-- First run / git missing cover everything else -->
+    <Border Grid.ColumnSpan="2" IsVisible="{Binding HasOverlay}" Background="{DynamicResource GpWindowBackground}">
+      <ContentControl Content="{Binding Overlay}" />
+    </Border>
+  </Grid>
+</Window>

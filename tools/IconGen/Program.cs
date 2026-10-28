@@ -1,4 +1,4 @@
-// Generates the GitPersona app icon: Assets/app.png, app.ico (Windows) and app.icns (macOS).
+// Generates the GitSona app icon: Assets/app.png, app.ico (Windows) and app.icns (macOS).
 // Usage: dotnet run --project tools/IconGen -- <output-dir>
 using SkiaSharp;
 

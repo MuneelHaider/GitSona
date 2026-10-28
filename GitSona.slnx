@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GitSona.App/GitSona.App.csproj" />
+    <Project Path="src/GitSona.Core/GitSona.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GitSona.Core.Tests/GitSona.Core.Tests.csproj" />
+  </Folder>
+</Solution>
