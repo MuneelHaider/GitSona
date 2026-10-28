@@ -5,16 +5,19 @@
 # GitPersona
 
 **Use the right Git account, every time.**<br>
-Switch between GitHub, GitLab and other Git accounts automatically — on Windows, macOS and Linux.
+Switch between GitHub, GitLab and other Git accounts automatically. Built for Windows (tested); macOS and Linux support is experimental and untested.
 
-[![CI](https://github.com/MuneelHaider/GIT/actions/workflows/ci.yml/badge.svg)](https://github.com/MuneelHaider/GIT/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/MuneelHaider/GIT?label=release)](https://github.com/MuneelHaider/GIT/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+![Tested on Windows](https://img.shields.io/badge/tested%20on-Windows-brightgreen)
+![macOS and Linux untested](https://img.shields.io/badge/macOS%20%26%20Linux-untested-orange)
 
 [**Install**](#how-to-install) · [Features](#features) · [Quick start](#quick-start) · [FAQ](#faq) · [Contributing](#contributing)
 
 </div>
+
+> [!WARNING]
+> **GitPersona has only been tested on Windows.** The macOS and Linux versions are *not tested* and there are no ready-made downloads for them yet. The source code is cross-platform and you can try building it yourself (see [Build from source](#build-from-source)), but expect rough edges. Bug reports from Mac and Linux users are very welcome.
 
 <!-- TODO: add screenshots, e.g. docs/screenshots/accounts.png, rules.png, checker.png -->
 
@@ -24,59 +27,43 @@ Switch between GitHub, GitLab and other Git accounts automatically — on Window
 
 **You only need one thing first: [Git](https://git-scm.com/downloads).** (On Windows, install *Git for Windows*.) GitPersona tells you if Git is missing. You do **not** need to install .NET — it is built in.
 
-### Windows (recommended: installer)
+### Windows (recommended: installer) — tested ✅
 
 1. Install [Git for Windows](https://git-scm.com/download/win) if you don't have it.
 2. Go to the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) and download **`GitPersona-Setup.exe`**.
 3. Run it. No admin rights needed — it installs for your user only and adds a Start Menu shortcut.
 4. If Windows shows **"Windows protected your PC"**, click **More info → Run anyway** ([why?](#windows-smartscreen-warning)).
 
-Prefer not to install anything? Download **`GitPersona.exe`** (Windows x64) or **`GitPersona-arm64.exe`** (Windows on ARM) instead. These are portable: run them from anywhere, including a USB stick. Portable builds don't auto-update.
+Prefer not to install anything? Download **`GitPersona-portable.exe`** (Windows x64) or **`GitPersona-arm64.exe`** (Windows on ARM) instead. These are portable: run them from anywhere, including a USB stick. Portable builds don't auto-update.
 
-### macOS
+### macOS and Linux — not tested ⚠️
 
-1. Install Git (`xcode-select --install`, or [git-scm.com](https://git-scm.com/download/mac)).
-2. From the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) download the archive for your Mac:
-   - Apple Silicon (M1/M2/M3/…): **`GitPersona-osx-arm64.tar.gz`**
-   - Intel: **`GitPersona-osx-x64.tar.gz`**
-3. Unpack it and start it:
+**GitPersona has only been tested on Windows.** There are no downloads for macOS or Linux yet, because the author has no way to test them. The code is written to be cross-platform (it is built with [Avalonia](https://avaloniaui.net/), and the automated tests are set up to run on all three systems), so you are welcome to try building it yourself:
+
+1. Install Git and the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+2. Get the code and run it:
    ```bash
-   tar -xzf GitPersona-osx-arm64.tar.gz
-   ./GitPersona
+   git clone https://github.com/MuneelHaider/GIT.git
+   cd GIT
+   dotnet run --project src/GitPersona.App
    ```
-4. The app isn't signed by Apple yet. If macOS refuses to open it, run `xattr -d com.apple.quarantine ./GitPersona` once, or right-click → **Open**.
+3. On Linux, the tray icon needs a desktop with StatusNotifier/AppIndicator support (on GNOME, install the *AppIndicator* extension).
 
-### Linux
-
-1. Install Git (`sudo apt install git`, `sudo dnf install git`, …).
-2. From the [**Releases** page](https://github.com/MuneelHaider/GIT/releases/latest) download **`GitPersona-linux-x64.tar.gz`**.
-3. Unpack it and start it:
-   ```bash
-   tar -xzf GitPersona-linux-x64.tar.gz
-   ./GitPersona
-   ```
-4. For the tray icon you need a desktop with StatusNotifier/AppIndicator support (on GNOME, install the *AppIndicator* extension). The main window works without it.
-
-> **macOS and Linux note:** these builds are produced and tested by CI but haven't been run on real machines by the author yet. They should work — if they don't, please [open an issue](https://github.com/MuneelHaider/GIT/issues/new).
+It might work perfectly, or it might not. If you try it, please [tell us how it went](https://github.com/MuneelHaider/GIT/issues/new) — whether it works or not. That is the quickest way to get real macOS and Linux downloads.
 
 ### Verify your download (optional)
 
-Every release includes **`SHA256SUMS.txt`**. To check a file you downloaded:
+GitHub shows a **SHA-256 checksum** next to each file on the release page. To check a file you downloaded, run this in PowerShell and compare the result:
 
 ```powershell
-# Windows (PowerShell) — compare the output with the matching line in SHA256SUMS.txt
 Get-FileHash .\GitPersona-Setup.exe -Algorithm SHA256
 ```
-```bash
-# macOS / Linux
-sha256sum -c --ignore-missing SHA256SUMS.txt
-```
 
-Every release is built from this repository by the public [release workflow](.github/workflows/release.yml), so you can see exactly how each file was made.
+The full source code is in this repository, so you can also read exactly what the app does, or build it yourself.
 
 ### Windows SmartScreen warning
 
-Version 1 is **not code-signed** (certificates cost money), and a new app has no download reputation yet — so Windows shows a warning. It does **not** mean the file was found to be malicious. Click **More info → Run anyway**, and use the checksum above if you want to be sure the file is the one built from this source.
+Version 1 is **not code-signed** (certificates cost money), and a new app has no download reputation yet — so Windows shows a warning. It does **not** mean the file was found to be malicious. Click **More info → Run anyway**, and compare the checksum (above) with the one on the release page if you want to be sure your download wasn't altered.
 
 ---
 
@@ -91,7 +78,7 @@ Version 1 is **not code-signed** (certificates cost money), and a new app has no
 - **Token expiry warnings.** Find out a token is about to expire *before* a push fails.
 - **Safe by design.** Changes to your Git config are limited to one clearly marked block, backed up first, and removable with one click. See [Security & privacy](#security--privacy).
 - **No SSH, no telemetry.** Everything is HTTPS; nothing is sent anywhere except to your own Git host.
-- **Cross-platform.** Windows, macOS and Linux, with optional start-at-login and a single running instance.
+- **Windows-first.** Tested on Windows, with optional start-at-login and a single running instance. The code also targets macOS and Linux, but those are **untested**.
 - **Free and open source** under the MIT license.
 
 ---
@@ -159,7 +146,7 @@ Only the installed Windows version, once a day if you leave that on, and it only
 - If an **IDE or another tool injects its own credentials**, that can bypass the credential helper and therefore GitPersona.
 - A default account only covers the hosts it has a login for; a rule's account only supplies its own host's login. Use the checker when a repository talks to a host the matching account doesn't cover.
 - A `user.email`, `user.name` or credential username that **you** set *after* GitPersona's block in `~/.gitconfig`, or inside a repository's `.git/config`, overrides the app. GitPersona warns about the former, and the checker shows the latter.
-- The macOS and Linux packages are not code-signed.
+- **macOS and Linux are untested** and have no prebuilt downloads.
 </details>
 
 ---
@@ -285,13 +272,13 @@ Windows signing is a pluggable CI step: set the repository secret `GITPERSONA_SI
 Contributions are welcome — bug reports, ideas, docs and code.
 
 - **Found a bug or have an idea?** [Open an issue](https://github.com/MuneelHaider/GIT/issues/new). For bugs, please include your OS, your Git version (`git --version`) and what the **Check a folder** screen shows.
-- **Want to change code?** Fork the repo, create a branch, make your change, run `dotnet test`, and open a pull request. CI runs the full test suite on Windows, macOS and Linux.
+- **Want to change code?** Fork the repo, create a branch, make your change, run `dotnet test`, and open a pull request. The repository's CI workflow builds and tests on Windows, macOS and Linux.
 - **Testing on macOS or Linux** is especially valuable right now — see below.
 
 ### Project status
 
-- **Verified:** core logic (accounts, config writing, rules, checker, provider validation, clone, startup entries, single instance) is covered by automated tests against real `git` in a sandboxed config. The Windows app was run end to end (add account → set default → connect to Git config).
-- **Not yet verified:** the Windows *installer* and uninstaller on a clean machine; the tray menu beyond the app starting; real token validation against live GitHub/GitLab servers (tested with mocked HTTP only); and the **macOS and Linux apps, which compile and publish but haven't been run on real machines**. Reports from those platforms are very welcome.
+- **Tested on Windows:** core logic (accounts, config writing, rules, checker, provider validation, clone, startup entries, single instance) is covered by automated tests against real `git` in a sandboxed config. The Windows app was run end to end (add account → set default → connect to Git config).
+- **Not yet verified:** the Windows *installer* and uninstaller on a clean machine; the tray menu beyond the app starting; real token validation against live GitHub/GitLab servers (tested with mocked HTTP only); and the **macOS and Linux apps, which have never been run on real machines** (the author only has Windows). Reports from those platforms are very welcome.
 
 ---
 
