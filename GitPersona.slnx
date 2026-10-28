@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GitPersona.App/GitPersona.App.csproj" />
+    <Project Path="src/GitPersona.Core/GitPersona.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GitPersona.Core.Tests/GitPersona.Core.Tests.csproj" />
+  </Folder>
+</Solution>

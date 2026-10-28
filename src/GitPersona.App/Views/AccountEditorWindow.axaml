@@ -1,0 +1,164 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GitPersona.App.ViewModels"
+        x:Class="GitPersona.App.Views.AccountEditorWindow"
+        x:DataType="vm:AccountEditorViewModel"
+        Title="{Binding Title}"
+        Icon="/Assets/app.png"
+        Width="580" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+  <Window.Styles>
+    <Style Selector="Button.choice">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="16,12" />
+    </Style>
+    <Style Selector="Button.link">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+    </Style>
+  </Window.Styles>
+
+  <ScrollViewer MaxHeight="800">
+    <Grid>
+
+      <!-- ===== Step 1: which service? ===== -->
+      <StackPanel Margin="24" Spacing="12" IsVisible="{Binding IsChoosing}">
+        <TextBlock Text="Add an account" Classes="h1" />
+        <TextBlock Text="Which service is this account on?" Classes="muted" />
+
+        <Button Classes="choice" Command="{Binding ChooseGitHubCommand}" AutomationProperties.Name="GitHub">
+          <StackPanel Spacing="2">
+            <TextBlock Text="GitHub" Classes="h2" />
+            <TextBlock Text="github.com — sign in with your browser" Classes="muted" />
+          </StackPanel>
+        </Button>
+        <Button Classes="choice" Command="{Binding ChooseGitLabCommand}" AutomationProperties.Name="GitLab">
+          <StackPanel Spacing="2">
+            <TextBlock Text="GitLab" Classes="h2" />
+            <TextBlock Text="gitlab.com — username, email and a personal access token" Classes="muted" />
+          </StackPanel>
+        </Button>
+        <Button Classes="choice" Command="{Binding ChooseGitLabSelfHostedCommand}" AutomationProperties.Name="Self-hosted GitLab">
+          <StackPanel Spacing="2">
+            <TextBlock Text="Self-hosted GitLab" Classes="h2" />
+            <TextBlock Text="Your company's GitLab server, for example gitlab.company.com" Classes="muted" />
+          </StackPanel>
+        </Button>
+        <Button Classes="choice" Command="{Binding ChooseGitHubEnterpriseCommand}" AutomationProperties.Name="GitHub Enterprise">
+          <StackPanel Spacing="2">
+            <TextBlock Text="GitHub Enterprise" Classes="h2" />
+            <TextBlock Text="A GitHub Enterprise Server at your own address" Classes="muted" />
+          </StackPanel>
+        </Button>
+        <Button Classes="choice" Command="{Binding ChooseOtherCommand}" AutomationProperties.Name="Another Git host">
+          <StackPanel Spacing="2">
+            <TextBlock Text="Another Git host" Classes="h2" />
+            <TextBlock Text="Bitbucket, Gitea, Azure DevOps or any HTTPS Git server" Classes="muted" />
+          </StackPanel>
+        </Button>
+
+        <Button Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Right" Margin="0,6,0,0" />
+      </StackPanel>
+
+      <!-- ===== Step 2: details ===== -->
+      <StackPanel Margin="24" Spacing="14" IsVisible="{Binding IsForm}">
+
+        <StackPanel Spacing="4">
+          <Button Classes="link" Content="‹ Choose a different service" Command="{Binding BackCommand}"
+                  IsVisible="{Binding CanGoBack}" HorizontalAlignment="Left" />
+          <TextBlock Text="{Binding ServiceName}" Classes="h1" />
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Text="Name for this account" Classes="muted" />
+          <TextBox Text="{Binding Label}" Watermark="e.g. Work or Personal" />
+        </StackPanel>
+
+        <StackPanel Spacing="4" IsVisible="{Binding ShowHostField}">
+          <TextBlock Text="Server address (https only)" Classes="muted" />
+          <TextBox Text="{Binding HostUrl}" Watermark="https://gitlab.company.com" />
+        </StackPanel>
+
+        <!-- GitHub: sign in with the browser -->
+        <Border Classes="card" IsVisible="{Binding ShowSignIn}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Sign in" Classes="h2" />
+            <TextBlock TextWrapping="Wrap" Classes="muted"
+                       Text="GitPersona opens GitHub's sign-in through Git Credential Manager. You log in on GitHub's own page; GitPersona never sees your password." />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Button Content="{Binding SignInButtonText}" Command="{Binding SignInWithGitHubCommand}"
+                      Classes="accent" IsEnabled="{Binding !IsBusy}" />
+              <ProgressBar IsIndeterminate="True" Width="70" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="{Binding SignedInText}" Classes="ok" FontWeight="SemiBold"
+                       IsVisible="{Binding SignedIn}" />
+            <Button Classes="link" Content="Use a personal access token instead" Command="{Binding UseTokenInsteadCommand}"
+                    HorizontalAlignment="Left" />
+          </StackPanel>
+        </Border>
+
+        <!-- Token entry (GitLab, other hosts, or GitHub by choice) -->
+        <StackPanel Spacing="6" IsVisible="{Binding UsesToken}">
+          <TextBlock Text="Personal access token" Classes="muted" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBox Grid.Column="0" Text="{Binding Token}" PasswordChar="●" Watermark="{Binding TokenPlaceholder}" />
+            <Button Grid.Column="1" Content="Check token" Command="{Binding CheckTokenCommand}" IsEnabled="{Binding CanCheckToken}" />
+          </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="16">
+            <Button Classes="link" Content="Create a token in your browser ↗" Command="{Binding OpenTokenPageCommand}"
+                    IsVisible="{Binding ShowCreateToken}" />
+            <Button Classes="link" Content="Sign in with the browser instead" Command="{Binding UseBrowserInsteadCommand}"
+                    IsVisible="{Binding CanSwitchToBrowser}" />
+          </StackPanel>
+          <TextBlock Text="{Binding TokenHelp}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding SecurityNote}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+          <TextBlock Classes="warn" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding ShowGcmMissingNote}"
+                     Text="Browser sign-in is not available because Git Credential Manager is not set up. You can set it up in Settings." />
+          <TextBlock Text="{Binding ExpiryText}" FontSize="12"
+                     IsVisible="{Binding ExpiryText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding UsernameLabel}" Classes="muted" />
+          <TextBox Text="{Binding Username}" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+          <StackPanel Grid.Column="0" Spacing="4">
+            <TextBlock Text="Name on commits" Classes="muted" />
+            <TextBox Text="{Binding CommitName}" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Spacing="4">
+            <TextBlock Text="Email on commits" Classes="muted" />
+            <TextBox Text="{Binding CommitEmail}" />
+          </StackPanel>
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding Messages}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CheckLine">
+              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2">
+                <TextBlock Text="{Binding Glyph}" Classes.ok="{Binding IsOk}" Classes.info="{Binding IsInfo}"
+                           Classes.warn="{Binding IsWarning}" Classes.error="{Binding IsError}" VerticalAlignment="Top" />
+                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" MaxWidth="490" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <ProgressBar IsIndeterminate="True" Width="60" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" />
+          <Button Content="Save without checking" Command="{Binding SaveWithoutCheckingCommand}"
+                  IsVisible="{Binding CanSaveUnvalidated}" />
+          <Button Content="Cancel" Command="{Binding CancelCommand}" />
+          <Button Content="{Binding SaveButtonText}" Command="{Binding SaveCommand}" Classes="accent" IsEnabled="{Binding !IsBusy}" />
+        </StackPanel>
+      </StackPanel>
+
+    </Grid>
+  </ScrollViewer>
+</Window>

@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GitPersona.App.ViewModels"
+             xmlns:core="using:GitPersona.Core"
+             x:Class="GitPersona.App.Views.CheckerView"
+             x:DataType="vm:CheckerViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="14">
+      <StackPanel>
+        <TextBlock Text="Which account applies here?" Classes="h1" />
+        <TextBlock Classes="muted" TextWrapping="Wrap"
+                   Text="Pick a folder. GitPersona asks Git itself what it would use there, and which file decided each value." />
+      </StackPanel>
+
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        <TextBox Text="{Binding FolderPath}" Watermark="Folder or repository" />
+        <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+        <Button Grid.Column="2" Content="Check" Classes="accent" Command="{Binding CheckCommand}" IsEnabled="{Binding !IsBusy}" />
+      </Grid>
+      <TextBlock Text="{Binding Error}" Classes="error" TextWrapping="Wrap"
+                 IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+      <StackPanel Spacing="14" IsVisible="{Binding HasResult}">
+        <Border Classes="banner error" IsVisible="{Binding HasMismatch}">
+          <TextBlock Text="✖  Mismatch: Git would commit as one account but sign in as another. See below." FontWeight="SemiBold" />
+        </Border>
+
+        <Border Classes="card">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="10">
+            <TextBlock Grid.Row="0" Text="Folder" Classes="muted" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RepoText}" TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="1" Text="Commit email" Classes="muted" />
+            <StackPanel Grid.Row="1" Grid.Column="1">
+              <TextBlock Text="{Binding EmailText}" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding EmailSource}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="2" Text="Commit name" Classes="muted" />
+            <StackPanel Grid.Row="2" Grid.Column="1">
+              <TextBlock Text="{Binding NameText}" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding NameSource}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="3" Text="Remote" Classes="muted" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding RemoteText}" TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="4" Text="Push login" Classes="muted" />
+            <StackPanel Grid.Row="4" Grid.Column="1">
+              <TextBlock Text="{Binding LoginText}" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding LoginSource}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="5" Text="Matching rules" Classes="muted" />
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding RulesText}" TextWrapping="Wrap" />
+          </Grid>
+        </Border>
+
+        <ItemsControl ItemsSource="{Binding Issues}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CheckLine">
+              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,3">
+                <TextBlock Text="{Binding Glyph}" Classes.ok="{Binding IsOk}" Classes.info="{Binding IsInfo}"
+                           Classes.warn="{Binding IsWarning}" Classes.error="{Binding IsError}" VerticalAlignment="Top" />
+                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" MaxWidth="660"
+                           Classes.error="{Binding IsError}" FontWeight="Normal" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Border Classes="card" IsVisible="{Binding CanFix}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Fix this repository" Classes="h2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap"
+                       Text="Put an account's login into this repository's remote URL, so pushes always use that account. You will be asked to confirm before anything changes." />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding FixAccount}" MinWidth="240">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="core:Account">
+                    <TextBlock Text="{Binding Label}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Content="Set this repo's remote to use this account" Command="{Binding FixRemoteCommand}" />
+            </StackPanel>
+            <TextBlock Text="{Binding FixStatus}" TextWrapping="Wrap"
+                       IsVisible="{Binding FixStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

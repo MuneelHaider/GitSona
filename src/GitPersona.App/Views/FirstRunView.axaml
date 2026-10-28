@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GitPersona.App.ViewModels"
+             x:Class="GitPersona.App.Views.FirstRunView"
+             x:DataType="vm:FirstRunViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" MaxWidth="640" Margin="32" VerticalAlignment="Center">
+      <StackPanel Orientation="Horizontal" Spacing="14">
+        <Image Source="/Assets/app.png" Width="48" Height="48" />
+        <StackPanel>
+          <TextBlock Text="Welcome to GitPersona" Classes="h1" />
+          <TextBlock Text="Three quick checks, and nothing changes until you say so." Classes="muted" />
+        </StackPanel>
+      </StackPanel>
+
+      <Border Classes="card">
+        <StackPanel Spacing="4">
+          <TextBlock Text="1 · Git" Classes="h2" />
+          <TextBlock Text="{Binding GitText}" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding RemoteRulesText}" Classes="warn" TextWrapping="Wrap" IsVisible="{Binding HasRemoteRulesText}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="2 · Where tokens are kept" Classes="h2" />
+          <TextBlock Text="{Binding HelperText}" TextWrapping="Wrap" />
+          <Button Content="{Binding HelperButton}" Command="{Binding FixHelperCommand}" IsVisible="{Binding HelperNeedsAction}" HorizontalAlignment="Left" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="3 · Connect GitPersona to Git" Classes="h2" />
+          <TextBlock TextWrapping="Wrap"
+                     Text="This adds one clearly marked block at the end of your global Git config. Your current config is backed up first, and you can remove the block at any time from Settings." />
+          <Button Content="Back up and connect" Classes="accent" Command="{Binding EnableCommand}" IsVisible="{Binding !ConfigReady}" HorizontalAlignment="Left" />
+          <TextBlock Text="{Binding ConfigText}" Classes="ok" TextWrapping="Wrap"
+                     IsVisible="{Binding ConfigText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+      </Border>
+
+      <CheckBox Content="{Binding StartupLabel}" IsChecked="{Binding StartAtLogin}" IsVisible="{Binding CanOfferStartup}" />
+
+      <TextBlock Text="{Binding Error}" Classes="error" TextWrapping="Wrap"
+                 IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <Button Content="Continue" Classes="accent" Command="{Binding FinishCommand}" HorizontalAlignment="Right" MinWidth="120" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

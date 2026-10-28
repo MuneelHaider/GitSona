@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType> <!-- no console window on Windows; plain executable elsewhere -->
+    <AssemblyName>GitPersona</AssemblyName>
+    <RootNamespace>GitPersona.App</RootNamespace>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Trimming breaks Avalonia's reflection/bindings; deliberately off for v1. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <RepositoryUrl>https://github.com/OWNER/GitPersona</RepositoryUrl>
+  </PropertyGroup>
+
+  <!--
+    Publishing (dotnet publish src/GitPersona.App -c Release -r win-x64) produces one self-contained file that
+    needs no .NET install. The RID is passed on the command line rather than hard-coded, so `dotnet run`
+    keeps working on macOS and Linux too.
+  -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> <!-- Avalonia/Skia native libs live inside the exe -->
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
+    <!-- Avalonia 11.3.9 pulls in 0.21.2, which has a known advisory (GHSA-xrw6-gwf8-vvr9); 0.21.3 is the patched drop-in. -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>RepositoryUrl</_Parameter1>
+      <_Parameter2>$(RepositoryUrl)</_Parameter2>
+    </AssemblyAttribute>
+    <ProjectReference Include="..\GitPersona.Core\GitPersona.Core.csproj" />
+  </ItemGroup>
+
+</Project>
