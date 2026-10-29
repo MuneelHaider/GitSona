@@ -25,7 +25,7 @@ Switch between GitHub, GitLab and other Git accounts automatically. Built for Wi
 
 ## How to Install
 
-**You only need one thing first: [Git](https://git-scm.com/downloads).** (On Windows, install *Git for Windows*.) GitSona tells you if Git is missing. You do **not** need to install .NET — it is built in.
+**You only need one thing first: [Git](https://git-scm.com/downloads).** (On Windows, install *Git for Windows*.) GitSona tells you if Git is missing. You do **not** need to install .NET to run GitSona — it is bundled inside. (You only need .NET if you [build from source](#build-from-source).)
 
 ### Windows (recommended: installer) — tested ✅
 
@@ -225,22 +225,40 @@ Restoring the backup puts your pre-GitSona config back exactly and discards any 
 
 ## Build from source
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and Git.
+This is for developers. If you just want to use GitSona, see [How to Install](#how-to-install).
 
-```bash
+**You need:** Windows, [Git](https://git-scm.com/downloads) and the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+
+**Steps** (in PowerShell):
+
+```powershell
 git clone https://github.com/MuneelHaider/GitSona.git
 cd GitSona
-
-dotnet test                                    # run the tests
-dotnet run --project src/GitSona.App        # run the app
-
-# One self-contained file, no .NET needed to run it:
-dotnet publish src/GitSona.App -c Release -r win-x64
+./build.ps1 -Version 0.3.0
 ```
 
-`./build.ps1 -Version 1.0.0` (Windows) runs the tests and writes `GitSona-portable.exe`, `GitSona-arm64.exe`, `GitSona-Setup.exe` and `SHA256SUMS.txt` into `artifacts/`. On macOS/Linux use `bash build.sh <version> [runtime]`.
+Replace `0.3.0` with the version number you want. **Always pass `-Version`.** If you leave it out, the build is labelled `0.1.0`.
 
-The executable is tens of MB because it bundles the .NET runtime. Trimming is deliberately off: it breaks Avalonia's reflection and bindings.
+When it finishes, your files are in the `artifacts/` folder:
+
+| File | What it is |
+|---|---|
+| `GitSona-Setup.exe` | The installer |
+| `GitSona-portable.exe` | Runs without installing (Windows 64-bit) |
+| `GitSona-arm64.exe` | Runs without installing (Windows ARM) |
+| `SHA256SUMS.txt` | Checksums for the three files above |
+
+The build runs the tests first. To skip them and build faster, add `-SkipTests`:
+
+```powershell
+./build.ps1 -Version 0.3.0 -SkipTests
+```
+
+If PowerShell says scripts are blocked, run `Set-ExecutionPolicy -Scope Process Bypass` once and try again.
+
+**Just want to run it while developing?** `dotnet run --project src/GitSona.App`
+
+**macOS / Linux:** `bash build.sh 0.3.0 linux-x64` (untested, like everything on those systems).
 
 <details>
 <summary><b>Project layout</b></summary>
