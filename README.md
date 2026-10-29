@@ -7,7 +7,7 @@
 **Use the right Git account, every time.**<br>
 Switch between GitHub, GitLab and other Git accounts automatically. Built for Windows (tested); macOS and Linux support is experimental and untested.
 
-[![Latest release](https://img.shields.io/github/v/release/MuneelHaider/GitSona?label=release)](https://github.com/MuneelHaider/GitSona/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/MuneelHaider/GitSona?label=release)](https://github.com/MuneelHaider/GitSona/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Tested on Windows](https://img.shields.io/badge/tested%20on-Windows-brightgreen)
 ![macOS and Linux untested](https://img.shields.io/badge/macOS%20%26%20Linux-untested-orange)
